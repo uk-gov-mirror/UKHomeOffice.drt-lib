@@ -24,6 +24,9 @@ object Bhx extends AirportConfigLike {
     val egates = 48d
   }
 
+  private val egateUtilisation = 0.7968
+  private val nonEgateUtilisation: Double = 1.0 - egateUtilisation
+
   val config: AirportConfig = AirportConfig(
     portCode = PortCode("BHX"),
     portName = "Birmingham",
@@ -115,7 +118,7 @@ object Bhx extends AirportConfigLike {
         EGate ->
           (
             List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-            List(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+            List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
           ),
         EeaDesk ->
           (
@@ -130,7 +133,7 @@ object Bhx extends AirportConfigLike {
         QueueDesk ->
           (
             List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-            List(8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8)
+            List(7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7)
           )
       )
     ),
@@ -140,15 +143,25 @@ object Bhx extends AirportConfigLike {
     terminalPaxTypeQueueAllocation = Map(
       T1 -> (
         defaultQueueRatios +
-          (EeaMachineReadable -> List(EGate -> 0.7968, EeaDesk -> (1.0 - 0.7968)))
+          (EeaMachineReadable -> List(EGate -> egateUtilisation, EeaDesk -> nonEgateUtilisation))
       ),
-      T2 -> (
-        defaultQueueRatios +
-          (EeaMachineReadable -> List(EGate -> 0.7968, EeaDesk -> (1.0 - 0.7968)))
-      )
+      T2 ->
+        (defaultQueueRatios +
+          (EeaMachineReadable -> List(
+            EGate -> egateUtilisation,
+            EeaDesk -> nonEgateUtilisation
+          )) +
+          (GBRNational -> List(
+            EGate -> egateUtilisation,
+            EeaDesk -> nonEgateUtilisation
+          )) +
+          (B5JPlusNational -> List(
+            EGate -> egateUtilisation,
+            EeaDesk -> nonEgateUtilisation
+          )))
     ),
     feedSources = Seq(ApiFeedSource, LiveBaseFeedSource, LiveFeedSource, ForecastFeedSource, AclFeedSource),
     flexedQueues = Set(EeaDesk, NonEeaDesk),
-    desksByTerminal = Map[Terminal, Int](T1 -> 9, T2 -> 8)
+    desksByTerminal = Map[Terminal, Int](T1 -> 9, T2 -> 7)
   )
 }

@@ -50,11 +50,41 @@ class PassengerInfoTest extends AnyWordSpec with Matchers {
 
   "manifest aggregations" should {
     "map passengers to age ranges and include Unknown when age missing" in {
-      val p1 = PassengerInfoJson(None, Nationality("USA"), EeaFlag("N"), Some(PaxAge(8)), None, InTransit(false), None, Some(Nationality("USA")), Some("id1"))
-      val p2 = PassengerInfoJson(None, Nationality("GBR"), EeaFlag("N"), Some(PaxAge(10)), None, InTransit(false), None, Some(Nationality("GBR")), Some("id2"))
-      val p3 = PassengerInfoJson(None, Nationality(""), EeaFlag("N"), None, None, InTransit(false), None, None, Some("id3"))
+      val p1 = PassengerInfoJson(
+        None,
+        Nationality("USA"),
+        EeaFlag("N"),
+        Some(PaxAge(8)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("USA")),
+        Some("id1")
+      )
+      val p2 = PassengerInfoJson(
+        None,
+        Nationality("GBR"),
+        EeaFlag("N"),
+        Some(PaxAge(10)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("GBR")),
+        Some("id2")
+      )
+      val p3 =
+        PassengerInfoJson(None, Nationality(""), EeaFlag("N"), None, None, InTransit(false), None, None, Some("id3"))
 
-      val vm = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("2026-07-07"), ManifestTimeOfArrival("09:00:00"), List(p1, p2, p3))
+      val vm = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("2026-07-07"),
+        ManifestTimeOfArrival("09:00:00"),
+        List(p1, p2, p3)
+      )
 
       val counts = PassengerInfo.manifestToAgeRangeCount(vm)
 
@@ -64,18 +94,56 @@ class PassengerInfoTest extends AnyWordSpec with Matchers {
     }
 
     "respect age boundary change for age 8" in {
-      val p = PassengerInfoJson(None, Nationality("USA"), EeaFlag("N"), Some(PaxAge(8)), None, InTransit(false), None, Some(Nationality("USA")), Some("id"))
+      val p = PassengerInfoJson(
+        None,
+        Nationality("USA"),
+        EeaFlag("N"),
+        Some(PaxAge(8)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("USA")),
+        Some("id")
+      )
 
-      val vmBefore = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("2026-07-07"), ManifestTimeOfArrival("09:00:00"), List(p))
-      val vmAfter = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("2026-07-09"), ManifestTimeOfArrival("11:00:00"), List(p))
+      val vmBefore = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("2026-07-07"),
+        ManifestTimeOfArrival("09:00:00"),
+        List(p)
+      )
+      val vmAfter = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("2026-07-09"),
+        ManifestTimeOfArrival("11:00:00"),
+        List(p)
+      )
 
       PassengerInfo.manifestToAgeRangeCount(vmBefore)(AgeRange(0, 9)) should ===(1)
       PassengerInfo.manifestToAgeRangeCount(vmAfter)(AgeRange(8, 17)) should ===(1)
     }
 
     "map empty nationality to Unknown" in {
-      val p = PassengerInfoJson(None, Nationality(""), EeaFlag("N"), None, None, InTransit(false), None, None, Some("id"))
-      val vm = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("2026-07-07"), ManifestTimeOfArrival("09:00:00"), List(p))
+      val p =
+        PassengerInfoJson(None, Nationality(""), EeaFlag("N"), None, None, InTransit(false), None, None, Some("id"))
+      val vm = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("2026-07-07"),
+        ManifestTimeOfArrival("09:00:00"),
+        List(p)
+      )
 
       val natCounts = PassengerInfo.manifestToNationalityCount(vm)
 
@@ -83,10 +151,39 @@ class PassengerInfoTest extends AnyWordSpec with Matchers {
     }
 
     "produce pax type counts using allocator" in {
-      val p1 = PassengerInfoJson(Some(DocumentType.Passport), Nationality("USA"), EeaFlag("N"), Some(PaxAge(5)), None, InTransit(false), None, Some(Nationality("USA")), Some("id1"))
-      val p2 = PassengerInfoJson(Some(DocumentType.Passport), Nationality("AUT"), EeaFlag("N"), Some(PaxAge(30)), None, InTransit(false), None, Some(Nationality("AUT")), Some("id2"))
+      val p1 = PassengerInfoJson(
+        Some(DocumentType.Passport),
+        Nationality("USA"),
+        EeaFlag("N"),
+        Some(PaxAge(5)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("USA")),
+        Some("id1")
+      )
+      val p2 = PassengerInfoJson(
+        Some(DocumentType.Passport),
+        Nationality("AUT"),
+        EeaFlag("N"),
+        Some(PaxAge(30)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("AUT")),
+        Some("id2")
+      )
 
-      val vm = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("2026-07-07"), ManifestTimeOfArrival("09:00:00"), List(p1, p2))
+      val vm = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("2026-07-07"),
+        ManifestTimeOfArrival("09:00:00"),
+        List(p1, p2)
+      )
 
       val paxTypes = PassengerInfo.manifestToPaxTypes(vm)
 
@@ -95,8 +192,27 @@ class PassengerInfoTest extends AnyWordSpec with Matchers {
     }
 
     "default to post-change pax type allocation when schedule parsing fails" in {
-      val p = PassengerInfoJson(Some(DocumentType.Passport), Nationality("JPN"), EeaFlag("N"), Some(PaxAge(8)), None, InTransit(false), None, Some(Nationality("JPN")), Some("id"))
-      val vm = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("not-a-date"), ManifestTimeOfArrival("also-invalid"), List(p))
+      val p = PassengerInfoJson(
+        Some(DocumentType.Passport),
+        Nationality("JPN"),
+        EeaFlag("N"),
+        Some(PaxAge(8)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("JPN")),
+        Some("id")
+      )
+      val vm = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("not-a-date"),
+        ManifestTimeOfArrival("also-invalid"),
+        List(p)
+      )
 
       val paxTypes = PassengerInfo.manifestToPaxTypes(vm)
 
@@ -104,10 +220,39 @@ class PassengerInfoTest extends AnyWordSpec with Matchers {
     }
 
     "produce a FlightManifestSummary from a manifest" in {
-      val p1 = PassengerInfoJson(None, Nationality("USA"), EeaFlag("N"), Some(PaxAge(8)), None, InTransit(false), None, Some(Nationality("USA")), Some("id1"))
-      val p2 = PassengerInfoJson(None, Nationality("GBR"), EeaFlag("N"), Some(PaxAge(10)), None, InTransit(false), None, Some(Nationality("GBR")), Some("id2"))
+      val p1 = PassengerInfoJson(
+        None,
+        Nationality("USA"),
+        EeaFlag("N"),
+        Some(PaxAge(8)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("USA")),
+        Some("id1")
+      )
+      val p2 = PassengerInfoJson(
+        None,
+        Nationality("GBR"),
+        EeaFlag("N"),
+        Some(PaxAge(10)),
+        None,
+        InTransit(false),
+        None,
+        Some(Nationality("GBR")),
+        Some("id2")
+      )
 
-      val vm = VoyageManifest(DC, PortCode("AAA"), PortCode("BBB"), VoyageNumber("1"), CarrierCode("BA"), ManifestDateOfArrival("2026-07-07"), ManifestTimeOfArrival("09:00:00"), List(p1, p2))
+      val vm = VoyageManifest(
+        DC,
+        PortCode("AAA"),
+        PortCode("BBB"),
+        VoyageNumber("1"),
+        CarrierCode("BA"),
+        ManifestDateOfArrival("2026-07-07"),
+        ManifestTimeOfArrival("09:00:00"),
+        List(p1, p2)
+      )
 
       val maybeSummary = PassengerInfo.manifestToFlightManifestSummary(vm)
 
