@@ -34,7 +34,7 @@ object AppDependencies {
     "org.apache.pekko"   %% "pekko-http"              % pekkoHttpVersion,
     "org.apache.pekko"   %% "pekko-http-spray-json"   % pekkoHttpVersion,
     "org.apache.pekko"   %% "pekko-slf4j"             % pekkoVersion,
-    "joda-time"           % "joda-time"               % "2.14.2",
+    "joda-time"           % "joda-time"               % "2.14.3",
     "org.apache.spark"   %% "spark-mllib"             % "4.1.1",
     "com.typesafe.slick" %% "slick"                   % slickVersion
   )
