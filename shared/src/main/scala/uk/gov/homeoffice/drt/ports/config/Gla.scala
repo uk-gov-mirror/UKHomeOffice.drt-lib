@@ -15,6 +15,15 @@ object Gla extends AirportConfigLike {
 
   import AirportConfigDefaults._
 
+  private val processingTimesInSeconds = ProcessingTimesInSeconds(
+    gbr = 23.0,
+    eea = 26.0,
+    b5jssk = 46.0,
+    nvn = 91.0,
+    vn = 101.0,
+    egates = 36.0
+  )
+
   val config: AirportConfig = AirportConfig(
     portCode = PortCode("GLA"),
     portName = "Glasgow",
@@ -35,7 +44,7 @@ object Gla extends AirportConfigLike {
       SplitRatio(visaNationalToDesk, 0.0),
       SplitRatio(nonVisaNationalToDesk, 0.01)
     )),
-    terminalProcessingTimes = Map(T1 -> defaultProcessingTimes),
+    terminalProcessingTimes = Map(T1 -> standardProcessingTimes(processingTimesInSeconds)),
     minMaxDesksByTerminalQueue24Hrs = Map(
       T1 -> Map(
         EGate ->

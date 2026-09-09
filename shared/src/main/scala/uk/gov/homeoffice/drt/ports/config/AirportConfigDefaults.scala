@@ -49,28 +49,43 @@ object AirportConfigDefaults {
     B5JPlusNational -> List(EeaDesk -> 1.0)
   )
 
-  private object ProcTimes {
-    val gbr = 22.0
-    val eea = 26.0
-    val b5jssk = 44.0
-    val nvn = 91.0
-    val vn = 89.0
-    val egates = 36d
+  final case class ProcessingTimesInSeconds(
+      gbr: Double,
+      eea: Double,
+      b5jssk: Double,
+      nvn: Double,
+      vn: Double,
+      egates: Double
+  )
+
+  private implicit class SecondsToMinutes(private val seconds: Double) extends AnyVal {
+    def toMinutes: Double = seconds / 60
   }
 
-  val defaultProcessingTimes: Map[PaxTypeAndQueue, Double] = Map(
-    b5jsskToDesk -> ProcTimes.b5jssk / 60,
-    b5jsskChildToDesk -> ProcTimes.b5jssk / 60,
-    eeaChildToDesk -> ProcTimes.eea / 60,
-    eeaMachineReadableToDesk -> ProcTimes.eea / 60,
-    eeaNonMachineReadableToDesk -> ProcTimes.eea / 60,
-    gbrNationalToDesk -> ProcTimes.gbr / 60,
-    gbrNationalChildToDesk -> ProcTimes.gbr / 60,
-    b5jsskToEGate -> ProcTimes.egates / 60,
-    eeaMachineReadableToEGate -> ProcTimes.egates / 60,
-    gbrNationalToEgate -> ProcTimes.egates / 60,
-    visaNationalToDesk -> ProcTimes.vn / 60,
-    nonVisaNationalToDesk -> ProcTimes.nvn / 60
+  def standardProcessingTimes(times: ProcessingTimesInSeconds): Map[PaxTypeAndQueue, Double] = Map(
+    b5jsskToDesk -> times.b5jssk.toMinutes,
+    b5jsskChildToDesk -> times.b5jssk.toMinutes,
+    eeaChildToDesk -> times.eea.toMinutes,
+    eeaMachineReadableToDesk -> times.eea.toMinutes,
+    eeaNonMachineReadableToDesk -> times.eea.toMinutes,
+    gbrNationalToDesk -> times.gbr.toMinutes,
+    gbrNationalChildToDesk -> times.gbr.toMinutes,
+    b5jsskToEGate -> times.egates.toMinutes,
+    eeaMachineReadableToEGate -> times.egates.toMinutes,
+    gbrNationalToEgate -> times.egates.toMinutes,
+    visaNationalToDesk -> times.vn.toMinutes,
+    nonVisaNationalToDesk -> times.nvn.toMinutes
+  )
+
+  val defaultProcessingTimes: Map[PaxTypeAndQueue, Double] = standardProcessingTimes(
+    ProcessingTimesInSeconds(
+      gbr = 22.0,
+      eea = 26.0,
+      b5jssk = 44.0,
+      nvn = 91.0,
+      vn = 89.0,
+      egates = 36.0
+    )
   )
 
   val fallbackProcessingTime: Double = defaultProcessingTimes.values.sum / defaultProcessingTimes.size
